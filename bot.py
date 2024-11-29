@@ -4,7 +4,7 @@ from discord import app_commands
 import os
 from dotenv import load_dotenv
 import json
-import datetime
+from datetime import datetime
 import asyncio
 
 # Charger les variables d'environnement
@@ -86,6 +86,14 @@ async def ajouter_tache(interaction: discord.Interaction, description: str):
         await interaction.followup.send(f"✅ Tâche ajoutée : `{description}` pour le {rappel_time.strftime('%d-%m-%Y %H:%M')}.")
     else:
         await interaction.followup.send(f"✅ Tâche ajoutée : `{description}` sans heure définie.")
+
+    # Envoi d'un message privé de confirmation
+    try:
+        # Envoie un message privé de confirmation
+        await interaction.user.send(f"✅ Tâche ajoutée avec succès : `{description}`. {f'Rappel fixé pour {rappel_time.strftime('%d-%m-%Y %H:%M')}' if rappel_time else 'Pas de rappel défini.'}")
+    except discord.Forbidden:
+        # Si l'utilisateur a désactivé les DMs, informer dans le chat public
+        await interaction.response.send_message("❌ Je ne peux pas envoyer de message privé à cet utilisateur.")
 
 # Commande slash pour voir les rappels
 @bot.tree.command(name="voir_rappels", description="Voir les rappels en attente.")
